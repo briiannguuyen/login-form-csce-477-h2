@@ -71,11 +71,11 @@
     <form id="loginForm">
       <h1>Log in</h1>
 
-      <label for="username">Username</label>
+      <label for="email">Email</label>
       <input
-        type="text"
-        id="username"
-        name="username"
+        type="email"
+        id="email"
+        name="email"
         autocomplete="username"
         required
       />
@@ -90,37 +90,53 @@
       />
 
       <button type="submit">Log in</button>
-
       <p id="message"></p>
     </form>
-    <script>
-      const VALID_USERNAME = "admin";
-      const VALID_PASSWORD = "password123";
 
+    <script>
       const form = document.getElementById("loginForm");
       const message = document.getElementById("message");
 
-      form.addEventListener("submit", function (event) {
-        event.preventDefault();
+      function validateInput(email, password) {
+        if (email === "" || password === "")
+          return "Enter both an email and a password.";
+        if (!email.includes("@")) return "Email must contain '@'.";
+        if (password.length < 8)
+          return "Password must be at least 8 characters.";
+        return null;
+      }
 
-        const username = document.getElementById("username").value.trim();
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value;
 
-        if (username === "" || password === "") {
-          showMessage("Enter both a username and a password.", "error");
+        const error = validateInput(email, password);
+        if (error) {
+          showMessage(error, "error");
           return;
         }
 
-        if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-          showMessage("Logged in as " + username + ".", "success");
-          form.reset();
-        } else {
-          showMessage("Incorrect username or password.", "error");
+        try {
+          const response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await response.json();
+          showMessage(
+            data.success
+              ? "Logged in as " + email + "."
+              : data.error || "Login failed.",
+            data.success ? "success" : "error",
+          );
+        } catch (err) {
+          showMessage("Could not reach server.", "error");
         }
       });
 
       function showMessage(text, type) {
-        message.textContent = text;
+        message.textContent = text; 
         message.className = type;
       }
     </script>
