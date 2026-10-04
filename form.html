@@ -1,11 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>login</title>
-</head>
-<body>
-  
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>login</title>
+  </head>
+  <body>
+    <form id="loginForm">
+      <h1>Log in</h1>
+
+      <label for="username">Username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        autocomplete="username"
+        required
+      />
+
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        autocomplete="current-password"
+        required
+      />
+
+      <button type="submit">Log in</button>
+
+      <p id="message"></p>
+    </form>
+    <script>
+      const VALID_USERNAME = "admin";
+      const VALID_PASSWORD = "password123";
+
+      const form = document.getElementById("loginForm");
+      const message = document.getElementById("message");
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+
+        if (username === "" || password === "") {
+          showMessage("Enter both a username and a password.", "error");
+          return;
+        }
+
+        if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+          showMessage("Logged in as " + username + ".", "success");
+          form.reset();
+        } else {
+          showMessage("Incorrect username or password.", "error");
+        }
+      });
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = type;
+      }
+    </script>
+  </body>
 </html>
